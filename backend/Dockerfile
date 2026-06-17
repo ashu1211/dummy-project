@@ -1,11 +1,11 @@
 FROM node:22-alpine
 
-WORKDIR /app
+WORKDIR /backend
 
 COPY package*.json ./
 RUN npm install --omit=dev
 
-COPY server.js ./
+COPY server.js db.js ./
 
 EXPOSE 5000
 
