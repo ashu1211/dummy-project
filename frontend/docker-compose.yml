@@ -1,9 +1,12 @@
-version: "3.8"
+#version: "3.8"
 
 services:
   frontend:
     image: frontend:latest
     container_name: frontend
     restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
     ports:
       - "80:80"

@@ -101,6 +101,72 @@ h1 {
   font-weight: 800;
 }
 
+.panel {
+  background: #ffffff;
+  border: 1px solid #d7dee8;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.panel-heading {
+  align-items: baseline;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.panel-heading h2 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.panel-heading span {
+  color: #667085;
+  font-size: 0.9rem;
+}
+
+.user-form {
+  align-items: end;
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+}
+
+.user-form label {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.user-form label span {
+  color: #475467;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.user-form input {
+  border: 1px solid #cfd8e3;
+  border-radius: 8px;
+  color: #1f2937;
+  font: inherit;
+  min-height: 42px;
+  min-width: 0;
+  padding: 0 0.8rem;
+}
+
+.user-form input:focus {
+  border-color: #235789;
+  outline: 3px solid rgba(35, 87, 137, 0.16);
+}
+
+.form-error {
+  color: #b42318;
+  font-weight: 700;
+  margin: 0.8rem 0 0;
+}
+
 .table-wrap {
   background: #ffffff;
   border: 1px solid #d7dee8;
@@ -147,8 +213,13 @@ tbody tr:last-child td {
   }
 
   .topbar,
-  .toolbar {
+  .toolbar,
+  .panel-heading {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .user-form {
+    grid-template-columns: 1fr;
   }
 }

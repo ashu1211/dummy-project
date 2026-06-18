@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { RefreshCw, Server, Users } from 'lucide-react';
+import { Plus, RefreshCw, Server, Users } from 'lucide-react';
 import './styles.css';
 
 function App() {
   const [users, setUsers] = useState([]);
   const [status, setStatus] = useState('loading');
   const [error, setError] = useState('');
+  const [form, setForm] = useState({ name: '', email: '', role: '' });
+  const [formStatus, setFormStatus] = useState('idle');
+  const [formError, setFormError] = useState('');
 
   async function loadUsers() {
     setStatus('loading');
@@ -25,6 +28,40 @@ function App() {
     } catch (loadError) {
       setError(loadError.message);
       setStatus('error');
+    }
+  }
+
+  function updateForm(event) {
+    const { name, value } = event.target;
+    setForm((current) => ({ ...current, [name]: value }));
+  }
+
+  async function addUser(event) {
+    event.preventDefault();
+    setFormStatus('saving');
+    setFormError('');
+
+    try {
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(form)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || `Backend returned HTTP ${response.status}`);
+      }
+
+      setUsers((current) => [...current, data]);
+      setForm({ name: '', email: '', role: '' });
+      setFormStatus('idle');
+    } catch (saveError) {
+      setFormError(saveError.message);
+      setFormStatus('error');
     }
   }
 
@@ -54,6 +91,57 @@ function App() {
           <RefreshCw size={18} aria-hidden="true" />
           <span>Refresh</span>
         </button>
+      </section>
+
+      <section className="panel" aria-label="Add user">
+        <div className="panel-heading">
+          <h2>Add User</h2>
+          <span>Save a new user to MySQL</span>
+        </div>
+        <form className="user-form" onSubmit={addUser}>
+          <label>
+            <span>Name</span>
+            <input
+              name="name"
+              onChange={updateForm}
+              placeholder="Enter name"
+              required
+              type="text"
+              value={form.name}
+            />
+          </label>
+          <label>
+            <span>Email</span>
+            <input
+              name="email"
+              onChange={updateForm}
+              placeholder="name@example.com"
+              required
+              type="email"
+              value={form.email}
+            />
+          </label>
+          <label>
+            <span>Role</span>
+            <input
+              name="role"
+              onChange={updateForm}
+              placeholder="Engineer"
+              required
+              type="text"
+              value={form.role}
+            />
+          </label>
+          <button type="submit" disabled={formStatus === 'saving'}>
+            <Plus size={18} aria-hidden="true" />
+            <span>{formStatus === 'saving' ? 'Saving' : 'Add'}</span>
+          </button>
+        </form>
+        {formError ? (
+          <p className="form-error" role="alert">
+            {formError}
+          </p>
+        ) : null}
       </section>
 
       {status === 'error' ? (

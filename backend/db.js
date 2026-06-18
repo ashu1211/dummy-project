@@ -13,4 +13,8 @@ const pool = mysql.createPool({
   connectionLimit: 10
 });
 
+// console.log(
+//   `MySQL pool configured: host=${process.env.DB_HOST}, port=${process.env.DB_PORT || 3306}, database=${process.env.DB_NAME}, user=${process.env.DB_USER}`
+// );
+
 export default pool;
