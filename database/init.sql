@@ -9,13 +9,3 @@ CREATE TABLE IF NOT EXISTS users (
   role VARCHAR(50) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
-INSERT INTO users (name, email, role)
-VALUES
-  ('Asha Sharma', 'asha@example.com', 'Frontend Engineer'),
-  ('Rohan Mehta', 'rohan@example.com', 'Backend Engineer'),
-  ('Meera Iyer', 'meera@example.com', 'Database Admin'),
-  ('Kabir Singh', 'kabir@example.com', 'Platform Engineer')
-ON DUPLICATE KEY UPDATE
-  name = VALUES(name),
-  role = VALUES(role);

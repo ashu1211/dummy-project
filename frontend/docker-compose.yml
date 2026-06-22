@@ -10,3 +10,8 @@ services:
 
     ports:
       - "80:80"
+    networks:
+      - demo_app_network
+networks:
+  demo_app_network:
+    name: demo_app_network

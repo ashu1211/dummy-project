@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   mysql:
     image: mysql:8.4
@@ -15,6 +13,8 @@ services:
       - ../database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
       - "3306:3306"
+    networks:
+      - demo_app_network
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -29,6 +29,12 @@ services:
       UPLOAD_LIMIT: 5G
     ports:
       - "8091:80"
+    networks:
+      - demo_app_network
 
 volumes:
   mysql_data:
+
+networks:
+  demo_app_network:
+    name: demo_app_network

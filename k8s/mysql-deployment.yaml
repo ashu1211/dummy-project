@@ -15,8 +15,10 @@ spec:
       containers:
         - name: mysql
           image: mysql:8.4
+          imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 3306
+            - name: mysql
+              containerPort: 3306
           envFrom:
             - secretRef:
                 name: mysql-secret
@@ -25,6 +27,7 @@ spec:
               mountPath: /var/lib/mysql
             - name: mysql-initdb
               mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
           readinessProbe:
             exec:
               command:
@@ -33,6 +36,18 @@ spec:
                 - mysqladmin ping -h 127.0.0.1 -uroot -p"$MYSQL_ROOT_PASSWORD"
             initialDelaySeconds: 20
             periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 12
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mysqladmin ping -h 127.0.0.1 -uroot -p"$MYSQL_ROOT_PASSWORD"
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
       volumes:
         - name: mysql-data
           persistentVolumeClaim:

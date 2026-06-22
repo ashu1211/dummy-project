@@ -22,7 +22,7 @@ with open("users.sql", "w") as f:
 
     records = []
 
-    for _ in range(10000000):
+    for _ in range(10):
         name = fake.name()
         email = fake.unique.email()
         role = random.choice(roles)
