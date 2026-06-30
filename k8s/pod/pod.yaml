@@ -6,7 +6,7 @@ metadata:
     app: nginx
 spec:
   containers:
-  - name: nginx2
+  - name: nginx-ashwani
     image: nginx:1.27
     env:
     - name: Name
