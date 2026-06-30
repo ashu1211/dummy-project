@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: nginx-deployment
 spec:
-  replicas: 4 # This will split 1 pod to one node, and 1 pod to another node
+  replicas: 12 # This will split 1 pod to one node, and 1 pod to another node
   selector:
     matchLabels:
       app: nginx
@@ -12,14 +12,14 @@ spec:
       labels:
         app: nginx
     spec:
-      nodeName: minikube-m04
-      topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: kubernetes.io/instance-type
-          whenUnsatisfiable: ScheduleAnyway  # Fixed: Changed 's' to capital 'S'
-          labelSelector:
-            matchLabels:
-              app: nginx
+      # nodeName: minikube-m04
+      # topologySpreadConstraints:
+      #   - maxSkew: 1
+      #     topologyKey: kubernetes.io/instance-type
+      #     whenUnsatisfiable: ScheduleAnyway  # Fixed: Changed 's' to capital 'S'
+      #     labelSelector:
+      #       matchLabels:
+      #         app: nginx
       containers:
       - name: nginx
         image: nginx:1.27
