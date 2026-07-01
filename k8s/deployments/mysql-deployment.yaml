@@ -3,15 +3,15 @@ kind: Deployment
 metadata:
   name: mysql
   labels:
-    app: ashwani
+    app: mysql
 spec:
   selector:
     matchLabels:
-      app: mysql
+      app: mysql-ashwani
   template:
     metadata:
       labels:
-        app: mysql
+        app: mysql-ashwani
     spec:
       containers:
         - name: mysql

@@ -5,7 +5,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: mysql
+    app: mysql-ashwani
   ports:
     - name: mysql
       port: 3306

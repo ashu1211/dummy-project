@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioSecurity - Face Recognition Visitor System</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- ChartJS for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-face-recognition brand-icon"></i>
+                <span class="brand-name">BioSecurity</span>
+            </div>
+            <ul class="nav-menu">
+                <li>
+                    <a href="#" class="nav-item active" data-target="dashboard-page">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-item" data-target="scanner-page">
+                        <i class="fa-solid fa-camera"></i>
+                        <span>Live Check-in</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-item" data-target="registry-page">
+                        <i class="fa-solid fa-users-gear"></i>
+                        <span>Visitor Registry</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-item" data-target="logs-page">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>Visit Logs</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <p>&copy; 2026 BioSecurity Corp</p>
+                <p>v1.0.0 (Enterprise)</p>
+            </div>
+        </nav>
+
+        <!-- Main Content Viewport -->
+        <main class="main-content">
+            
+            <!-- VIEW 1: DASHBOARD -->
+            <div id="dashboard-page" class="page-view active">
+                <div class="page-header">
+                    <h1 class="page-title">Operational Dashboard</h1>
+                    <p class="page-subtitle">Real-time visitor logs and analytics overview for today.</p>
+                </div>
+                
+                <!-- Metrics -->
+                <div class="stats-grid">
+                    <div class="card stat-card">
+                        <div class="stat-info">
+                            <h3>Registered Visitors</h3>
+                            <div class="stat-value" id="stat-registered-count">0</div>
+                        </div>
+                        <div class="stat-icon registered">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-info">
+                            <h3>Total Visits Today</h3>
+                            <div class="stat-value" id="stat-visits-count">0</div>
+                        </div>
+                        <div class="stat-icon visits">
+                            <i class="fa-solid fa-user-check"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Graphs & Live Ticker -->
+                <div class="dashboard-grid">
+                    <div class="card chart-card">
+                        <h3 class="form-title"><i class="fa-solid fa-chart-line"></i> Visitor Traffic Today</h3>
+                        <div style="position: relative; height: 300px; width: 100%;">
+                            <canvas id="trafficChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card chart-card">
+                        <h3 class="form-title"><i class="fa-solid fa-bolt"></i> Live Feed</h3>
+                        <div class="ticker-container" id="dashboard-ticker">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 2: LIVE CHECK-IN SCANNER -->
+            <div id="scanner-page" class="page-view">
+                <div class="page-header">
+                    <h1 class="page-title">Live Check-in Portal</h1>
+                    <p class="page-subtitle">Point camera at visitor to scan, recognize, and log their entry details.</p>
+                </div>
+                
+                <div class="scan-layout">
+                <div class="scan-left-col">
+                    <!-- Camera Box -->
+                    <div class="card webcam-card">
+                        <!-- Scanning Grid/Line Overlay -->
+                        <div class="scanner-overlay" id="scanner-overlay">
+                            <div class="scan-line"></div>
+                            <div class="scan-brackets bracket-tl"></div>
+                            <div class="scan-brackets bracket-tr"></div>
+                            <div class="scan-brackets bracket-bl"></div>
+                            <div class="scan-brackets bracket-br"></div>
+                        </div>
+                        <video id="webcam-video" autoplay playsinline muted></video>
+                        <canvas id="overlay-canvas"></canvas>
+                        
+                        <div class="webcam-controls">
+                            <button class="btn btn-secondary" id="btn-toggle-camera"><i class="fa-solid fa-video-slash"></i> Stop Camera</button>
+                            <button class="btn btn-primary" id="btn-manual-scan"><i class="fa-solid fa-qrcode"></i> Scan Face</button>
+                            <button class="btn btn-secondary" id="btn-refresh-camera" title="Refresh Camera"><i class="fa-solid fa-rotate"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Last Visits Panel: shown below camera when visitor is recognized -->
+                    <div class="card last-visits-panel" id="last-visits-panel" style="display:none;">
+                        <h3 class="form-title"><i class="fa-solid fa-clock-rotate-left"></i> Last Visits</h3>
+                        <div id="last-visits-list">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+                    
+                    <!-- Right: Entry Form & Match Result -->
+                    <div class="card">
+                        <!-- Recognition Results View -->
+                        <div class="result-card" id="scan-result-card">
+                            <div class="result-header">
+                                <img src="" alt="Cropped Visitor Face" class="crop-preview" id="result-crop">
+                                <div class="match-info">
+                                    <h4 id="result-name">Scanning...</h4>
+                                    <span class="match-badge" id="result-badge">Unrecognized</span>
+                                </div>
+                            </div>
+                            
+                            <div class="stats-summary" id="result-stats" style="display: none;">
+                                <!-- Will display past visitor frequency stats -->
+                            </div>
+                        </div>
+                        
+                        <!-- Check-in Log Details Form -->
+                        <form id="checkin-form">
+                            <h3 class="form-title"><i class="fa-solid fa-id-card"></i> Visitor Entry Logs</h3>
+                            
+                            <!-- Hidden tracking state -->
+                            <input type="hidden" id="form-visitor-id">
+                            <input type="hidden" id="form-snapshot-b64">
+                            <input type="hidden" id="form-is-registered" value="false">
+
+                            <div class="form-group">
+                                <label for="form-name">Visitor Full Name</label>
+                                <input type="text" id="form-name" class="form-control" placeholder="Enter name or scan face" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="form-to-meet">Host to Meet (Name/Department)</label>
+                                <input type="text" id="form-to-meet" class="form-control" placeholder="Who are they meeting?" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="form-from">Where did they come from? (Company/City)</label>
+                                <input type="text" id="form-from" class="form-control" placeholder="Origin Organization / Location" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="form-purpose">Purpose of Visit</label>
+                                <input type="text" id="form-purpose" class="form-control" placeholder="Interview, Client Meeting, Delivery, etc.">
+                            </div>
+
+                            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                                <button type="submit" class="btn btn-success" id="btn-submit-checkin" disabled style="flex: 1;">
+                                    <i class="fa-solid fa-circle-check"></i> Complete Check-in
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="btn-reset-form">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset
+                                </button>
+                            </div>
+
+                            <!-- ID Details Accordion (shown only after face recognition) -->
+                            <div class="id-accordion" id="id-accordion" style="display:none;">
+                                <button type="button" class="id-accordion-toggle" id="id-accordion-toggle">
+                                    <span><i class="fa-solid fa-id-badge"></i> ID &amp; Organization Details</span>
+                                    <i class="fa-solid fa-chevron-down" id="id-chevron"></i>
+                                </button>
+                                <div class="id-accordion-body" id="id-accordion-body">
+
+                                    <!-- Government IDs -->
+                                    <p class="id-section-label"><i class="fa-solid fa-landmark"></i> Government IDs</p>
+                                    <div class="id-grid">
+                                        <div class="form-group">
+                                            <label>Aadhar Card No.</label>
+                                            <input type="text" id="id-aadhar" class="form-control" placeholder="XXXX XXXX XXXX" maxlength="14">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>PAN Card No.</label>
+                                            <input type="text" id="id-pan" class="form-control" placeholder="ABCDE1234F" maxlength="10" style="text-transform:uppercase">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Voter ID</label>
+                                            <input type="text" id="id-voter" class="form-control" placeholder="ABC1234567">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Driving License No.</label>
+                                            <input type="text" id="id-driving" class="form-control" placeholder="DL-XXXXXXXXXX">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Passport No.</label>
+                                            <input type="text" id="id-passport" class="form-control" placeholder="A1234567">
+                                        </div>
+                                    </div>
+
+                                    <!-- Private / Organization Info -->
+                                    <p class="id-section-label" style="margin-top:16px;"><i class="fa-solid fa-building"></i> Organization / Private Info</p>
+                                    <div class="id-grid">
+                                        <div class="form-group">
+                                            <label>Company Name</label>
+                                            <input type="text" id="id-company" class="form-control" placeholder="Organization Name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Company / Employee ID</label>
+                                            <input type="text" id="id-company-id" class="form-control" placeholder="EMP-00123">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>School Name</label>
+                                            <input type="text" id="id-school" class="form-control" placeholder="School / Institution">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>College / University</label>
+                                            <input type="text" id="id-college" class="form-control" placeholder="College Name">
+                                        </div>
+                                        <div class="form-group" style="grid-column: 1/-1;">
+                                            <label>Office / Home Address</label>
+                                            <input type="text" id="id-address" class="form-control" placeholder="Full address">
+                                        </div>
+                                    </div>
+
+                                    <button type="button" class="btn btn-primary" id="btn-save-identity" style="margin-top:12px; width:100%;">
+                                        <i class="fa-solid fa-floppy-disk"></i> Save ID Details
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 3: VISITOR REGISTRY -->
+            <div id="registry-page" class="page-view">
+                <div class="page-header">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h1 class="page-title">Visitor Registry</h1>
+                            <p class="page-subtitle">Directory of all profiles registered in the database.</p>
+                        </div>
+                        <div style="width: 300px;">
+                            <input type="text" id="registry-search" class="form-control" placeholder="Search visitors...">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Visitor Cards Grid -->
+                <div class="registry-grid" id="registry-list">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- VIEW 4: VISIT LOGS AUDIT -->
+            <div id="logs-page" class="page-view">
+                <div class="page-header">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h1 class="page-title">Entry Visit Logs</h1>
+                            <p class="page-subtitle">Complete check-in timeline and snapshots database audit logs.</p>
+                        </div>
+                        <div style="display: flex; gap: 12px; width: 450px;">
+                            <input type="text" id="log-search-name" class="form-control" placeholder="Search by name...">
+                            <input type="text" id="log-search-host" class="form-control" placeholder="Search by host...">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Audit Logs Table -->
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Snapshot</th>
+                                    <th>Visitor Name</th>
+                                    <th>To Meet (Host)</th>
+                                    <th>Origin (From)</th>
+                                    <th>Purpose</th>
+                                    <th>Visit Date & Time</th>
+                                    <th>Visit Freq</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logs-table-body">
+                                <!-- Populated dynamically via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- Toast Notifications Center -->
+    <div class="toast-container" id="toast-center"></div>
+
+    <!-- Visitor ID Modal (opened from Registry) -->
+    <div class="modal-overlay" id="id-modal" style="display:none;" onclick="closeIdModal(event)">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-visitor-info">
+                    <img id="modal-avatar" src="" class="modal-avatar" alt="">
+                    <div>
+                        <h3 id="modal-name">Visitor Name</h3>
+                        <span class="match-badge success">Registered Profile</span>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="closeIdModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="modal-body">
+                <p class="id-section-label"><i class="fa-solid fa-landmark"></i> Government IDs</p>
+                <div class="id-grid">
+                    <div class="form-group"><label>Aadhar No.</label><input type="text" id="modal-aadhar" class="form-control" placeholder="Not saved"></div>
+                    <div class="form-group"><label>PAN No.</label><input type="text" id="modal-pan" class="form-control" placeholder="Not saved" style="text-transform:uppercase"></div>
+                    <div class="form-group"><label>Voter ID</label><input type="text" id="modal-voter" class="form-control" placeholder="Not saved"></div>
+                    <div class="form-group"><label>Driving License</label><input type="text" id="modal-driving" class="form-control" placeholder="Not saved"></div>
+                    <div class="form-group"><label>Passport No.</label><input type="text" id="modal-passport" class="form-control" placeholder="Not saved"></div>
+                </div>
+
+                <p class="id-section-label" style="margin-top:16px;"><i class="fa-solid fa-building"></i> Organization / Private Info</p>
+                <div class="id-grid">
+                    <div class="form-group"><label>Company Name</label><input type="text" id="modal-company" class="form-control" placeholder="Not saved"></div>
+                    <div class="form-group"><label>Company / Employee ID</label><input type="text" id="modal-company-id" class="form-control" placeholder="Not saved"></div>
+                    <div class="form-group"><label>School Name</label><input type="text" id="modal-school" class="form-control" placeholder="Not saved"></div>
+                    <div class="form-group"><label>College / University</label><input type="text" id="modal-college" class="form-control" placeholder="Not saved"></div>
+                    <div class="form-group" style="grid-column:1/-1;"><label>Office / Home Address</label><input type="text" id="modal-address" class="form-control" placeholder="Not saved"></div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btn-modal-save"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+                <button class="btn btn-secondary" onclick="closeIdModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Logic script -->
+    <script src="js/app.js"></script>
+</body>
+</html>
